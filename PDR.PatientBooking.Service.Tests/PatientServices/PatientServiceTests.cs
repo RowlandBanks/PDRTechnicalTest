@@ -109,7 +109,14 @@ namespace PDR.PatientBooking.Service.Tests.PatientServices
             _patientService.AddPatient(request);
 
             //assert
-            _context.Patient.Should().ContainEquivalentOf(expected, options => options.Excluding(patient => patient.Id));
+            // RCB: See discussion on AddDoctor_AddsDoctorToContextWithGeneratedId.
+            _context.Patient.Should().ContainEquivalentOf(expected,
+                options =>
+                {
+                    options.Excluding(patient => patient.Id);
+                    options.Excluding(patient => patient.Created);
+                    return options;
+                });
         }
 
         [Test]
