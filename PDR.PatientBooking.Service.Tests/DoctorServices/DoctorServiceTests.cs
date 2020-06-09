@@ -1,5 +1,7 @@
 ﻿using AutoFixture;
 using FluentAssertions;
+using FluentAssertions.Common;
+using FluentAssertions.Equivalency;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NUnit.Framework;
@@ -107,7 +109,27 @@ namespace PDR.PatientBooking.Service.Tests.DoctorServices
             _doctorService.AddDoctor(request);
 
             //assert
-            _context.Doctor.Should().ContainEquivalentOf(expected, options => options.Excluding(doctor => doctor.Id));
+            // RCB: This test is failing because the "Created" date-time does not match.
+            //      There are several ways to solve it:
+            //      1) Inject a date provider into the _docterService, to permit the test author to control
+            //         the current date/time.
+            //      2) Ignore the "Created" property when asserting, by .Excluding it.
+            //      3) Permit a certain tolerance when comparing the date/time.
+            //
+            //      I have used approach (3), although in real-life I would be tempted by the finer control that
+            //      (1) provides.
+            _context
+                .Doctor
+                .Should()
+                .ContainEquivalentOf(
+                    expected,
+                    options =>
+                    {
+                        options.Excluding(doctor => doctor.Id);
+                        options.Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation)).WhenTypeIs<DateTime>();
+
+                        return options;
+                    });
         }
 
         [Test]
