@@ -106,12 +106,12 @@ namespace PDR.PatientBooking.Service.Tests.DoctorServices.Validation
             res.Errors.Should().Contain("Email must be populated");
         }
 
-        [TestCase("user@")]
-        [TestCase("@")]
-        [TestCase("user")]
-        [TestCase(null)]
-        [TestCase("")]
-        public void ValidateRequest_InvalidEmail_ReturnsFailedValidationResult(string email)
+        [TestCase("user@", "Email must be a valid email address")]
+        [TestCase("@", "Email must be a valid email address")]
+        [TestCase("user", "Email must be a valid email address")]
+        [TestCase(null, "Email must be populated")]
+        [TestCase("", "Email must be populated")]
+        public void ValidateRequest_InvalidEmail_ReturnsFailedValidationResult(string email, string expectedFailure)
         {
             //arrange
             var request = GetValidRequest();
@@ -122,7 +122,7 @@ namespace PDR.PatientBooking.Service.Tests.DoctorServices.Validation
 
             //assert
             res.PassedValidation.Should().BeFalse();
-            res.Errors.Should().Contain("Email must be a valid email address");
+            res.Errors.Should().Contain(expectedFailure);
         }
 
         [TestCase("user@domain.com")]
