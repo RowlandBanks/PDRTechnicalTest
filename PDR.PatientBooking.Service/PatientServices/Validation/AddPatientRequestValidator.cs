@@ -1,6 +1,7 @@
 ﻿using PDR.PatientBooking.Data;
 using PDR.PatientBooking.Service.PatientServices.Requests;
 using PDR.PatientBooking.Service.Validation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,10 +10,12 @@ namespace PDR.PatientBooking.Service.PatientServices.Validation
     public class AddPatientRequestValidator : IAddPatientRequestValidator
     {
         private readonly PatientBookingContext _context;
+        private readonly IEmailValidator _emailValidator;
 
-        public AddPatientRequestValidator(PatientBookingContext context)
+        public AddPatientRequestValidator(PatientBookingContext context, IEmailValidator emailValidator)
         {
             _context = context;
+            _emailValidator = emailValidator;
         }
 
         public PdrValidationResult ValidateRequest(AddPatientRequest request)
@@ -28,7 +31,24 @@ namespace PDR.PatientBooking.Service.PatientServices.Validation
             if (ClinicNotFound(request, ref result))
                 return result;
 
+            if (EmailNotValid(request, ref result))
+                return result;
+
             return result;
+        }
+
+        private bool EmailNotValid(AddPatientRequest request, ref PdrValidationResult result)
+        {
+            if (!_emailValidator.EmailAddressIsValid(request.Email, out var failureReason))
+            {
+                result.PassedValidation = false;
+                result.Errors.Add(failureReason);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private bool MissingRequiredFields(AddPatientRequest request, ref PdrValidationResult result)

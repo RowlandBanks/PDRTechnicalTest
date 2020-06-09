@@ -5,6 +5,7 @@ using PDR.PatientBooking.Service.DoctorServices;
 using PDR.PatientBooking.Service.DoctorServices.Validation;
 using PDR.PatientBooking.Service.PatientServices;
 using PDR.PatientBooking.Service.PatientServices.Validation;
+using PDR.PatientBooking.Service.Validation;
 
 namespace PDR.PatientBooking.Service.IoC
 {
@@ -12,6 +13,7 @@ namespace PDR.PatientBooking.Service.IoC
     {
         public static void RegisterPatientBookingServices(this IServiceCollection collection)
         {
+            collection.AddScoped<IEmailValidator, EmailValidator>();
             collection.AddScoped<IPatientService, PatientService>();
             collection.AddScoped<IAddPatientRequestValidator, AddPatientRequestValidator>();
 

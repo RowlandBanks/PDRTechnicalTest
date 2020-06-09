@@ -6,6 +6,7 @@ using PDR.PatientBooking.Data;
 using PDR.PatientBooking.Data.Models;
 using PDR.PatientBooking.Service.DoctorServices.Requests;
 using PDR.PatientBooking.Service.DoctorServices.Validation;
+using PDR.PatientBooking.Service.Validation;
 using System;
 
 namespace PDR.PatientBooking.Service.Tests.DoctorServices.Validation
@@ -36,7 +37,8 @@ namespace PDR.PatientBooking.Service.Tests.DoctorServices.Validation
 
             // Sut instantiation
             _addDoctorRequestValidator = new AddDoctorRequestValidator(
-                _context
+                _context,
+                new EmailValidator()
             );
         }
 
