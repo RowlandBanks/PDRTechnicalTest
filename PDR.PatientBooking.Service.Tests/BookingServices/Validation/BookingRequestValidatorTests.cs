@@ -7,9 +7,7 @@ using PDR.PatientBooking.Service.BookingServices.Requests;
 using PDR.PatientBooking.Service.BookingServices.Validation;
 using PDR.PatientBooking.Service.Date;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PDR.PatientBooking.Service.Tests.BookingServices.Validation
 {
@@ -24,7 +22,7 @@ namespace PDR.PatientBooking.Service.Tests.BookingServices.Validation
         public void SetUp()
         {
             _context = new PatientBookingContext(new DbContextOptionsBuilder<PatientBookingContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options);
-           
+
             // Add a booking at 5 ticks to 10 ticks past Now.
             _context.Order.Add(new Order
             {

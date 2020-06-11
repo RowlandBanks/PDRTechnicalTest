@@ -23,6 +23,8 @@ namespace PDR.PatientBooking.Service.BookingServices
 
         public void MakeBooking(BookingRequest bookingRequest)
         {
+            _bookingRequestValidator.ValidateRequest(bookingRequest);
+
             var bookingId = new Guid();
             var bookingStartTime = bookingRequest.StartTime;
             var bookingEndTime = bookingRequest.EndTime;
