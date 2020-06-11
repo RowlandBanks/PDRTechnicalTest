@@ -14,7 +14,7 @@ namespace PDR.PatientBooking.Service.BookingServices
         private readonly IBookingRequestValidator _bookingRequestValidator;
 
         public BookingService(
-            PatientBookingContext context, 
+            PatientBookingContext context,
             IBookingRequestValidator bookingRequestValidator)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -23,7 +23,12 @@ namespace PDR.PatientBooking.Service.BookingServices
 
         public void MakeBooking(BookingRequest bookingRequest)
         {
-            _bookingRequestValidator.ValidateRequest(bookingRequest);
+            var validationResult = _bookingRequestValidator.ValidateRequest(bookingRequest);
+
+            if (!validationResult.PassedValidation)
+            {
+                throw new ArgumentException(validationResult.Errors.First());
+            }
 
             var bookingId = new Guid();
             var bookingStartTime = bookingRequest.StartTime;

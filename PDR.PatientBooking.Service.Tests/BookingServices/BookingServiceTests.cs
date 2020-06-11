@@ -68,5 +68,30 @@ namespace PDR.PatientBooking.Service.Tests.BookingServices
 
             Assert.That(_context.Order.Count(b => b.StartTime == now), Is.EqualTo(1));
         }
+
+        [Test]
+        public void BookingServiceThrowsExceptionAndDoesNotSaveBookingIfValidationPasses()
+        {
+            var now = DateTime.Now;
+            var bookingRequest = new BookingRequest
+            {
+                DoctorId = _doctorId,
+                PatientId = _patientId,
+                StartTime = now
+            };
+
+            var expectedError = "the validation error";
+            var validator = new Mock<IBookingRequestValidator>();
+            validator.Setup(r => r.ValidateRequest(bookingRequest)).Returns(new PdrValidationResult(false, expectedError));
+            var service = new BookingService(_context, validator.Object);
+
+            var exception = Assert.Throws<ArgumentException>(() => service.MakeBooking(bookingRequest));
+
+            Assert.That(exception.Message, Is.EqualTo(expectedError));
+
+            validator.Verify(r => r.ValidateRequest(bookingRequest), Times.Once);
+
+            Assert.That(_context.Order.Where(b => b.StartTime == now), Is.Empty);
+        }
     }
 }
